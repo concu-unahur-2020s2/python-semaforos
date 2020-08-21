@@ -9,6 +9,7 @@ MAX_COUNT = 1000000
 counter = 0
 
 mutex = threading.Lock()
+# mutex = threading.Semaphore(1) hubiera sido lo mismo que el Lock()
 
 def cuenta():
     global counter
