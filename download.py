@@ -31,8 +31,9 @@ def bajar_imagen(img_url):
     img_name = img_url.split('/')[3]
     img_name = f'{img_name}.jpg'
     with open(img_name, 'wb') as img_file:
+        print(f'{img_name} se está descargando...')
         img_file.write(img_bytes)
-        # print(f'{img_name} fue bajada...')
+        print(f'{img_name} fue descargada...')
 
 
 tiempo = Contador()
@@ -40,8 +41,11 @@ tiempo = Contador()
 tiempo.iniciar()
 
 # una por una
+#for url in img_urls:
+    #bajar_imagen(url)
+    
 for url in img_urls:
-    bajar_imagen(url)
+    threading.Thread(target=bajar_imagen(url)).start()
 
 tiempo.finalizar()
 tiempo.imprimir()

@@ -6,12 +6,14 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message
 
 class Impresora:
   def __init__(self, numero):
-    self.numero = numero
+    self.numero = numero + 1 #Pequeño fix para que tengan numeros 1,2,3 y se vea más lindo
 
   def imprimir(self, texto):
     # Simulamos un tiempo de impresión. No cambiar esta línea.
     time.sleep(0.5)
     logging.info(f'(Impresora {self.numero}) "{texto}"')
+
+semaphore = threading.Semaphore(3)
 
 class Computadora(threading.Thread):
   def __init__(self, texto):
@@ -21,11 +23,13 @@ class Computadora(threading.Thread):
   def run(self):
     # Tomo una impresora de la lista.
     # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
+    semaphore.acquire()
     impresora = impresorasDisponibles.pop()
     # La utilizo.
     impresora.imprimir(self.texto)
     # La vuelvo a dejar en la lista para que la use otro.
     impresorasDisponibles.append(impresora)
+    semaphore.release()
 
 impresorasDisponibles = []
 for i in range(3):
@@ -35,5 +39,5 @@ for i in range(3):
 Computadora('hola').start()
 Computadora('qué tal').start()
 Computadora('todo bien').start()
-Computadora('esta explota').start()
-Computadora('esta también').start()
+Computadora('esta ya no explota').start()
+Computadora('esta tampoco').start()
