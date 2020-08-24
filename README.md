@@ -3,7 +3,15 @@
 ## Precalentando
 En `dowload.py` hay código que se baja secuencialmete imágenes, desde urls determinadas.
 - Correlo y fijate aprox. cuánto tarda.
+```
+    Tardo 45.46 segundos.
+```
 - Ahora codealo concurrente usando threads. Por ahora, lanzá un thread por cada imagen que querés bajar. Para más adelante: si querés usar solamente 3 threads, ¿cómo hacés?
+```
+    Corri dos veces el programa usando 1 thread por imagen y demoro casi lo mismo que bajando una por
+    una. En la primera me demoro 42.77 segundos y en la segunda 45.0 segundos.
+    
+```
 
 ## Mutex
 En `contadorConcurrente_conMutex.py` está resuelto el problema del contador, sincronizado usando un `Lock` (mutex), para que lo uses de ejemplo.
