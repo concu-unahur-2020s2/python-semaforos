@@ -1,7 +1,7 @@
-import requests
-import time
 import logging
 import threading
+
+import requests
 
 from tiempo import Contador
 
