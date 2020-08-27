@@ -36,16 +36,33 @@ def bajar_imagen(img_url):
 
 
 tiempo = Contador()
-
 tiempo.iniciar()
 
 # una por una
-for url in img_urls:
-    bajar_imagen(url)
+#for url in img_urls:
+ # bajar_imagen(url)
 
 tiempo.finalizar()
 tiempo.imprimir()
 
+# Tardan en descargarse todas las fotos 197 segundos.
 
 
 # Pero ahora con threads
+
+# Bajar las imagenes de a 1 thread
+for url in img_urls:
+    t = threading.Thread(target=bajar_imagen(url))
+    t.start
+#La primera vez tardo 197 segundos y la segunda vez tardo 186 segundos
+ 
+
+# Bajar las imagenes de a 3 thread
+# De este modo no funciona.
+
+for t in range(3):
+    lista_nueva = []
+    for i in range(3):
+        lista_nueva.append(img_urls[i:i+3])
+    t = threading.Thread(target=bajar_imagen(lista_nueva))
+    t.start
