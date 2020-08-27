@@ -26,14 +26,19 @@ img_urls = [
     'https://images.unsplash.com/photo-1549692520-acc6669e2f0c'
 ]
 
+
+mutex = threading.Semaphore(3)
+
 def bajar_imagen(img_url):
     img_bytes = requests.get(img_url).content
     img_name = img_url.split('/')[3]
     img_name = f'{img_name}.jpg'
+    mutex.acquire()
+    print(f'{img_name} comenzo a bajar...')
     with open(img_name, 'wb') as img_file:
-        #print(f'{img_name} comenzo a bajar...')
         img_file.write(img_bytes)
         print(f'{img_name} fue bajada...')
+    mutex.release()
 
 
 tiempo = Contador()
@@ -52,24 +57,24 @@ tiempo.imprimir()
 
 
 # Pero ahora con threads
-# uno por cada iteracion.
+# Solo 3 threads
 
-listaTiempos = []
 threads = []
+
 
 def comenzoDescarga(url):
     img_name = url.split('/')[3]
     img_name = f'{img_name}.jpg'
     print(f'{img_name} comenzo a descargarse...')
 
+
 for url in img_urls:
-    t = threading.Thread(target=bajar_imagen, args=[url])
+    t = threading.Thread(target=bajar_imagen, args=[url]) 
     threads.append(t)
     t.start()
-    comenzoDescarga(url)
+    #comenzoDescarga(url)
     
-    
-    
+       
 for t in threads:
     t.join()
 
