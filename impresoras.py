@@ -3,6 +3,7 @@ import time
 import logging
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
+mutex = threading.Semaphore(3)
 
 class Impresora:
   def __init__(self, numero):
@@ -21,11 +22,13 @@ class Computadora(threading.Thread):
   def run(self):
     # Tomo una impresora de la lista.
     # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
+    mutex.acquire() ## captura la impresora
     impresora = impresorasDisponibles.pop()
     # La utilizo.
     impresora.imprimir(self.texto)
     # La vuelvo a dejar en la lista para que la use otro.
     impresorasDisponibles.append(impresora)
+    mutex.release()  ## libera la impresora
 
 impresorasDisponibles = []
 for i in range(3):
