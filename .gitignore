@@ -1,0 +1,9 @@
+build/
+target/
+*iml
+.idea/
+.gradle/
+out/
+*yml
+__pycache__/
+.git
