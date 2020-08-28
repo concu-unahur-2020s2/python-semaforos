@@ -39,13 +39,30 @@ tiempo = Contador()
 
 tiempo.iniciar()
 
+lista =[]
+
 # una por una
 for url in img_urls:
-    bajar_imagen(url)
+    #bajar_imagen(url)
+    t = threading.Thread(target=bajar_imagen, args=[url])
+    #lanzarlo
+    t.start()
+    lista.append(t)
 
-tiempo.finalizar()
-tiempo.imprimir()
-
+# Para el case de limitar de a 3 threads para bajar las imagenes, pondría un semaforo que limite 
+#la ejecucion. A medida que finalicen, pasar a bajar el resto.
 
 
 # Pero ahora con threads
+
+
+#for i in range(1):
+    #crear un thead
+    
+
+for thread in lista:
+    thread.join()
+    tiempo.finalizar()
+    tiempo.imprimir()
+
+#
