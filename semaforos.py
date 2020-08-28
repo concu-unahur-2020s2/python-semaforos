@@ -24,3 +24,4 @@ semaphore.acquire()
 logging.info('esto no se imprime nunca jamás')
 
 # Para salir, apretar Ctrl + C o cerrar la consola
+semaphore.r
