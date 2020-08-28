@@ -14,6 +14,7 @@ class Cocinero(threading.Thread):
     logging.info('Reponiendo los platos...')
     for i in range(3):
       platosDisponibles += 1
+    for i in range(3):
       semaforoComensal.release()
 
 class Comensal(threading.Thread):
@@ -34,5 +35,3 @@ for i in range(5):
   Comensal(i).start()
   if platosDisponibles == 0:
     Cocinero().start()
-
-
