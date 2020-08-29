@@ -1,9 +1,9 @@
 import requests
-import time
+import tiempo
 import logging
 import threading
 
-from tiempo import Contador
+
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
@@ -40,12 +40,45 @@ tiempo = Contador()
 tiempo.iniciar()
 
 # una por una
-for url in img_urls:
-    bajar_imagen(url)
+#for url in img_urls:
+#    bajar_imagen(url)
 
-tiempo.finalizar()
-tiempo.imprimir()
+#tiempo.finalizar()
+#tiempo.imprimir()
 
 
 
 # Pero ahora con threads
+
+
+lista =[]
+
+for url in img_urls:
+    #Generamos un hilo por cada imagen
+    t = threading.Thread(target=bajar_imagen, args=[url])
+    #Lo lanzamos
+    t.start()
+    lista.append(t)
+
+
+#Esperamos cada hilo y lo imprimimos.
+for thread in lista:
+    thread.join()
+    tiempo.finalizar()
+    tiempo.imprimir()
+
+
+#Tarda 153 segundos secuencial y 15 segundos con hilos.
+#Para limitar a 3 hilos pondria un semaforo que limite la generacion de hilos
+#A tres y que liberen luego del join para que el resto siga. De todas formas
+#creo que el codigo como está no se podria. porque una vez finalizado el 
+#primer for creo... no lo se, voy a probarlo.
+
+
+
+
+
+
+
+
+
