@@ -6,4 +6,6 @@ target/
 out/
 *yml
 __pycache__/
+__*
+.*
 .git
