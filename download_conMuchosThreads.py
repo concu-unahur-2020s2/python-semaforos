@@ -54,22 +54,22 @@ tiempo.imprimir()
 # Pero ahora con threads
 # uno por cada iteracion.
 
-listaTiempos = []
 threads = []
+
 
 def comenzoDescarga(url):
     img_name = url.split('/')[3]
     img_name = f'{img_name}.jpg'
     print(f'{img_name} comenzo a descargarse...')
 
+
 for url in img_urls:
-    t = threading.Thread(target=bajar_imagen, args=[url])
+    t = threading.Thread(target=bajar_imagen, args=[url]) 
     threads.append(t)
     t.start()
     comenzoDescarga(url)
     
-    
-    
+       
 for t in threads:
     t.join()
 

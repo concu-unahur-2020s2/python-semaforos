@@ -3,7 +3,34 @@
 ## Precalentando
 En `dowload.py` hay código que se baja secuencialmete imágenes, desde urls determinadas.
 - Correlo y fijate aprox. cuánto tarda.
+  Entre 102 y 110 seg. 
 - Ahora codealo concurrente usando threads. Por ahora, lanzá un thread por cada imagen que querés bajar. Para más adelante: si querés usar solamente 3 threads, ¿cómo hacés?
+  Se me ocurrio poner en el for una llamada para que cada iteracion tenga un threads:
+  
+  for url in img_urls:
+    t = threading.Thread(target=bajar_imagen, args=[url]) 
+    threads.append(t)
+    t.start()
+    comenzoDescarga(url)
+  
+  Agregue una pequeña funcion, que me diga cuando el hilo ejecuto, me haga un print de pantalla con una leyenda a modo de ver que todos los hilos iniciaron con el for.
+  Para que solo haya tres threads corriendo, defini como area critica, la funcion que descarga la imgagen. Alli agregue una acquire() para que antes de comenzar a descargar y  luego que termine, suelte el bloqueo.
+  Lo que si, no logre esta vez poder representarlo en pantalla.
+  
+  mutex = threading.Semaphore(3)
+
+def bajar_imagen(img_url):
+    img_bytes = requests.get(img_url).content
+    img_name = img_url.split('/')[3]
+    img_name = f'{img_name}.jpg'
+    mutex.acquire()
+    print(f'{img_name} comenzo a bajar...')
+    with open(img_name, 'wb') as img_file:
+        img_file.write(img_bytes)
+        print(f'{img_name} fue bajada...')
+    mutex.release()
+  
+  
 
 ## Mutex
 En `contadorConcurrente_conMutex.py` está resuelto el problema del contador, sincronizado usando un `Lock` (mutex), para que lo uses de ejemplo.
