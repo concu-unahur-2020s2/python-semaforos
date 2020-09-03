@@ -11,18 +11,13 @@ mutex = threading.Lock()
 class Cocinero(threading.Thread):
   def __init__(self, numero):
     super().__init__()
-    #self.name = 'Cocinero'
     self.name = f'Cocinero {numero}'
 
   def run(self):
     global platosDisponibles
-    if (platosDisponibles == 0):
-        while (platosDisponibles < 3):
-            mutex.acquire()
-            #logging.info('Reponiendo los platos...')
+    while (platosDisponibles < 3):
             platosDisponibles += 1
             logging.info(f'reponiendo {platosDisponibles} platos')
-            mutex.release()
 
 
 class Comensal(threading.Thread):
@@ -34,12 +29,11 @@ class Comensal(threading.Thread):
     global platosDisponibles
     semaphore.acquire()
     if platosDisponibles < 1 :
-        #self.llamarCocinero()
         self.llamarCocineros()
     mutex.acquire()
     platosDisponibles -= 1
-    mutex.release()
     logging.info(f'¡Qué rico! Quedan {platosDisponibles} platos')
+    mutex.release()
     semaphore.release()
 
     
@@ -47,7 +41,6 @@ class Comensal(threading.Thread):
       Cocinero().start()
       
   def llamarCocineros(self):
-      #for i in range(2):
       Cocinero(random.randint(0,2)).start()
 
 platosDisponibles = 3

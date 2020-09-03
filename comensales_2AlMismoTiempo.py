@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
-semaphore = threading.Semaphore(2)
+semaphore = threading.Semaphore(1)
 mutex = threading.Lock()
 
 class Cocinero(threading.Thread):
@@ -27,12 +27,10 @@ class Comensal(threading.Thread):
   def run(self):
     global platosDisponibles
     semaphore.acquire()
-    if platosDisponibles < 1 :
+    if platosDisponibles < 2 :
         self.llamarCocinero()
-    mutex.acquire()
     platosDisponibles -= 1
     logging.info(f'¡Qué rico! Quedan {platosDisponibles} platos')
-    mutex.release()
     semaphore.release()
 
     
@@ -43,10 +41,7 @@ platosDisponibles = 3
 
 Cocinero().start()
 
-
-for i in range(5):
+for i in range(7):
     Comensal(i).start()
-
-    
 
 logging.info(f'platos sobrantes {platosDisponibles} ')

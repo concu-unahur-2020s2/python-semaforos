@@ -1,6 +1,7 @@
 import threading
 import time
 import logging
+import random
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
@@ -14,9 +15,9 @@ class Cocinero(threading.Thread):
 
   def run(self):
     global platosDisponibles
-    while (platosDisponibles < 3):
-      platosDisponibles += 1
-      logging.info(f'reponiendo {platosDisponibles} platos')
+    if platosDisponibles == 0 : 
+        platosDisponibles += 1
+        logging.info('Reponiendo platos...')
 
 
 class Comensal(threading.Thread):
@@ -27,17 +28,17 @@ class Comensal(threading.Thread):
   def run(self):
     global platosDisponibles
     semaphore.acquire()
-    if platosDisponibles < 1 :
-        self.llamarCocinero()
-    mutex.acquire()
+    self.llamarCocinero()
     platosDisponibles -= 1
     logging.info(f'¡Qué rico! Quedan {platosDisponibles} platos')
-    mutex.release()
     semaphore.release()
-
     
   def llamarCocinero(self):
       Cocinero().start()
+      
+  def llamarCocineros(self):
+      Cocinero(random.randint(0,2)).start()
+
 
 platosDisponibles = 3
 
@@ -47,6 +48,5 @@ Cocinero().start()
 for i in range(5):
     Comensal(i).start()
 
-    
 
 logging.info(f'platos sobrantes {platosDisponibles} ')
