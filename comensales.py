@@ -4,9 +4,6 @@ import logging
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
-semaphone = threading.Semaphore(2)
-semaphoneCocinero = threading.Semaphore(0)
-
 
 class Cocinero(threading.Thread):
   def __init__(self):
@@ -16,11 +13,14 @@ class Cocinero(threading.Thread):
   def run(self):
     global platosDisponibles
 
-    semaphone.acquire()
-    while (True):
-      semaphone.acquire()
-      logging.info('Reponiendo los platos...')
-      platosDisponibles = 3
+    while(True):
+      semaforoCocinero.acquire()
+      try:
+        logging.info('Reponiendo los platos...')
+        platosDisponibles = platosDisponibles
+      finally:
+        semaforoPlato.release()
+
     
 
 class Comensal(threading.Thread):
@@ -31,15 +31,25 @@ class Comensal(threading.Thread):
   def run(self):
     global platosDisponibles
 
-    platosDisponibles -= 1
-    logging.info(f'¡Qué rico! Quedan {platosDisponibles} platos')
-    semaphoneCocinero.release()
+    semaforoPlato.acquire()
+    try:
+      while platosDisponibles == 0:   #probar con if
+
+        semaforoCocinero.release()
+        semaforoPlato.acquire()
+      platosDisponibles -= 1
+      logging.info(f'¡Qué rico! Quedan {platosDisponibles} platos')
+    finally:
+      semaforoPlato.release()
 
 
-platosDisponibles = 3
+semaforoCocinero = threading.Semaphore(0)
+semaforoPlato = threading.Semaphore(1) # un solo thead que modificque la variable
+platosDisponibles = 5
+
 
 Cocinero().start()
 
-for i in range(5):
+for i in range(50):
   Comensal(i).start()
 

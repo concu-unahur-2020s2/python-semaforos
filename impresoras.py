@@ -13,7 +13,7 @@ class Impresora:
     time.sleep(0.5)
     logging.info(f'(Impresora {self.numero}) "{texto}"')
 
-cantImpresoras = 5  # variable con la cantidad de impresoras
+cantImpresoras = 3  # variable con la cantidad de impresoras
 
 #creo el samaforo
 semaphone = threading.Semaphore(cantImpresoras)
@@ -27,7 +27,7 @@ class Computadora(threading.Thread):
     # Tomo una impresora de la lista.
     # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
 
-    semaphone.acquire() # bandera
+    semaphone.acquire() # sube bandera
     try:
       impresora = impresorasDisponibles.pop() #toma la primero impresora de la lista
     # La utilizo.
@@ -36,6 +36,7 @@ class Computadora(threading.Thread):
       impresorasDisponibles.append(impresora)
     finally:
       semaphone.release() #baja la bandera
+
 
 impresorasDisponibles = []
 for i in range( cantImpresoras):
