@@ -38,14 +38,40 @@ def bajar_imagen(img_url):
 tiempo = Contador()
 
 tiempo.iniciar()
-
+'''
 # una por una
 for url in img_urls:
     bajar_imagen(url)
 
-tiempo.finalizar()
-tiempo.imprimir()
-
+'''
 
 
 # Pero ahora con threads
+
+'''
+for url in img_urls:
+    t = threading.Thread(target=bajar_imagen(url))
+    t.start
+'''
+
+# Usando solo 3 threads
+
+##### No funciona #####
+'''
+def bajar_imagenes(lista_urls):
+    for img_url in lista_urls:
+        img_bytes = requests.get(img_url).content
+        img_name = img_url.split('/')[3]
+        img_name = f'{img_name}.jpg'
+        with open(img_name, 'wb') as img_file:
+            img_file.write(img_bytes)
+
+for t in range(3):
+    lista_nueva = []
+    for i in range(3):
+        lista_nueva.append(img_urls[i:i+3])
+    t = threading.Thread(target=bajar_imagenes(lista_nueva))
+    t.start
+'''
+tiempo.finalizar()
+tiempo.imprimir()
