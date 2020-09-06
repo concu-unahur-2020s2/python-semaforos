@@ -8,6 +8,7 @@ comensales = []
 ctdComensales = 5
 platosDisponibles = 3
 semaforos = threading.Semaphore(platosDisponibles)
+sirviendo = threading.Semaphore(1)
 
 class Cocinero(threading.Thread):
   def __init__(self):
@@ -17,12 +18,16 @@ class Cocinero(threading.Thread):
   def run(self):
     global platosDisponibles
     global semaforos
+    global sirviendo
+    
     while(ctdComensales > 0):
       if(platosDisponibles==0):
+        sirviendo.acquire()
         logging.info('Reponiendo los platos...')
         for x in range(3):
           platosDisponibles += 1
           semaforos.release()
+        sirviendo.release()
 
 
 class Comensal(threading.Thread):
