@@ -4,6 +4,9 @@ import logging
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
+cantidadDeImpresoras = 3
+semaforos = threading.Semaphore(cantidadDeImpresoras)
+
 class Impresora:
   def __init__(self, numero):
     self.numero = numero
@@ -21,14 +24,16 @@ class Computadora(threading.Thread):
   def run(self):
     # Tomo una impresora de la lista.
     # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
+    semaforos.acquire()
     impresora = impresorasDisponibles.pop()
     # La utilizo.
     impresora.imprimir(self.texto)
     # La vuelvo a dejar en la lista para que la use otro.
     impresorasDisponibles.append(impresora)
+    semaforos.release()
 
 impresorasDisponibles = []
-for i in range(3):
+for i in range(cantidadDeImpresoras):
   # Creo tres impresoras y las meto en la lista. Se puede cambiar el 3 por otro número para hacer pruebas.
   impresorasDisponibles.append(Impresora(i))
 
