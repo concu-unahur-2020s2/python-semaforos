@@ -22,6 +22,7 @@ class Computadora(threading.Thread):
     self.texto = texto
 
   def run(self):
+    global semaforos
     # Tomo una impresora de la lista.
     # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
     semaforos.acquire()
