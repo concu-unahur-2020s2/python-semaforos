@@ -7,6 +7,9 @@ from tiempo import Contador
 
 logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(threadName)s] - %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
+tiempo = Contador()
+ctdThreads = 10
+threads = []
 
 img_urls = [
     'https://images.unsplash.com/photo-1516117172878-fd2c41f4a759',
@@ -26,26 +29,63 @@ img_urls = [
     'https://images.unsplash.com/photo-1549692520-acc6669e2f0c'
 ]
 
-def bajar_imagen(img_url):
+def descargaSecuencial(img_url):
     img_bytes = requests.get(img_url).content
     img_name = img_url.split('/')[3]
     img_name = f'{img_name}.jpg'
     with open(img_name, 'wb') as img_file:
         img_file.write(img_bytes)
-        # print(f'{img_name} fue bajada...')
 
+def sinThreads():
+    tiempo.iniciar()
 
-tiempo = Contador()
+    for url in img_urls:
+        descargaSecuencial(url)
 
-tiempo.iniciar()
-
-# una por una
-for url in img_urls:
-    bajar_imagen(url)
-
-tiempo.finalizar()
-tiempo.imprimir()
-
-
+    tiempo.finalizar()
+    print("Sin thread: ") 
+    tiempo.imprimir()
 
 # Pero ahora con threads
+
+def descargadaConcurrente(semaforos):
+    while(img_urls): # Mientras no este vacia
+        semaforos.acquire()
+        if(not img_urls): 
+            # Para que los threads dentro del while puedan salir si la lista quedo vacia
+            semaforos.release()
+            break
+        # saco la url de la lista para que no lo vuelva a descargar otro thread
+        url = img_urls.pop()
+        #logging.info(f'Descargando imagen...')
+        descargaSecuencial(url)
+        semaforos.release()
+        #logging.info(f'Imagen descargada {url}...')
+
+def semaforo(cantidad):
+    semaforos = threading.Semaphore(cantidad)
+    backup = [] 
+    backup.extend(img_urls)
+    tiempo.iniciar()
+
+    for thread in range( ctdThreads ):
+        thread = threading.Thread(target = descargadaConcurrente, args=(semaforos,))
+        thread.start()
+        threads.append(thread)
+
+    # Espero que terminen todos los threads
+    for thread in threads:
+        thread.join()
+    tiempo.finalizar()
+    print("Threads con " + str(cantidad) + " semaforos: ") 
+    tiempo.imprimir()
+    img_urls.extend(backup)
+
+# Primer intento sin usar threads
+sinThreads()
+
+# Tercer intento con 10 threads y mutex (semaforo = 1)
+semaforo(1)
+
+# Segundo intento con 10 threads y 3 semaforos
+semaforo(3)
