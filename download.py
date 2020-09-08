@@ -48,19 +48,19 @@ def sinThreads():
 
 # Pero ahora con threads
 
-def descargadaConcurrente(semaforos):
+def descargaConcurrente(semaforos):
     while(img_urls): # Mientras no este vacia
         semaforos.acquire()
-        if(not img_urls): 
-            # Para que los threads dentro del while puedan salir si la lista quedo vacia
+        try:
+            # saco la url de la lista para que no lo vuelva a descargar otro thread
+            url = img_urls.pop()
+            #logging.info(f'Descargando imagen...')
+            descargaSecuencial(url)
+            #logging.info(f'Imagen descargada {url}...')
+        except IndexError:
+            pass
+        finally:
             semaforos.release()
-            break
-        # saco la url de la lista para que no lo vuelva a descargar otro thread
-        url = img_urls.pop()
-        #logging.info(f'Descargando imagen...')
-        descargaSecuencial(url)
-        semaforos.release()
-        #logging.info(f'Imagen descargada {url}...')
 
 def semaforo(cantidad):
     semaforos = threading.Semaphore(cantidad)
@@ -69,13 +69,14 @@ def semaforo(cantidad):
     tiempo.iniciar()
 
     for thread in range( ctdThreads ):
-        thread = threading.Thread(target = descargadaConcurrente, args=(semaforos,))
+        thread = threading.Thread(target = descargaConcurrente, args=(semaforos,))
         thread.start()
         threads.append(thread)
 
-    # Espero que terminen todos los threads
     for thread in threads:
+        # Espero que terminen todos los threads
         thread.join()
+    
     tiempo.finalizar()
     print("Threads con " + str(cantidad) + " semaforos: ") 
     tiempo.imprimir()

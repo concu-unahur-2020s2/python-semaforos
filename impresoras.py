@@ -23,15 +23,16 @@ class Computadora(threading.Thread):
 
   def run(self):
     global semaforos
-    # Tomo una impresora de la lista.
-    # (Esta línea va a fallar si no quedan impresoras, agregar sincronización para que no pase)
     semaforos.acquire()
-    impresora = impresorasDisponibles.pop()
-    # La utilizo.
-    impresora.imprimir(self.texto)
-    # La vuelvo a dejar en la lista para que la use otro.
-    impresorasDisponibles.append(impresora)
-    semaforos.release()
+    try:
+        # Tomo una impresora de la lista.
+        impresora = impresorasDisponibles.pop()
+        # La utilizo.
+        impresora.imprimir(self.texto)
+        # La vuelvo a dejar en la lista para que la use otro.
+        impresorasDisponibles.append(impresora)
+    finally:
+        semaforos.release()
 
 impresorasDisponibles = []
 for i in range(cantidadDeImpresoras):
