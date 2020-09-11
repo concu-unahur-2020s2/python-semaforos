@@ -1,7 +1,7 @@
-import requests
-import time
 import logging
 import threading
+
+import requests
 
 from tiempo import Contador
 
@@ -23,7 +23,7 @@ img_urls = [
     'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99',
     'https://images.unsplash.com/photo-1516972810927-80185027ca84',
     'https://images.unsplash.com/photo-1550439062-609e1531270e',
-    'https://images.unsplash.com/photo-1549692520-acc6669e2f0c'
+    'https://images.unsplash.com/photo-1549692520-acc6669e2f0c',
 ]
 
 def bajar_imagen(img_url):
@@ -47,5 +47,19 @@ tiempo.finalizar()
 tiempo.imprimir()
 
 
-
 # Pero ahora con threads
+
+tiempo2 = Contador()
+tiempo2.iniciar()
+
+for url in img_urls:
+    t = threading.Thread(target=bajar_imagen(url))
+    t.start()
+
+tiempo2.finalizar()
+tiempo2.imprimir()
+
+
+# consulta no se si esta bien codeado, los resltados de descargas
+# me estan dando casi iguales
+# no tendria q ser mas rapido con los threads?
